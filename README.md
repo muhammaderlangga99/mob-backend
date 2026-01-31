@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://blog.golang.org/go-brand/Go-Logo/PNG/Go-Logo_Blue.png" width="500" />
+</p>
+
 # Merchant Onboarding Backend
 
 ## Teknologi dan Struktur
@@ -7,14 +11,16 @@
 - **Swagger (swaggo)**: dokumentasi `/swagger/index.html` dengan BearerAuth untuk endpoint auth.
 - **SMTP Email Service**: kirim link verifikasi (env `SMTP_*` plus `APP_URL`).
 
-![Gin Logo](https://raw.githubusercontent.com/gin-gonic/logo/master/color.png)  
-![GORM Logo](https://gorm.io/assets/favicon-96x96.png)  
-![MySQL Logo](https://dev.mysql.com/common/logos/logo-mysql-170x115.png)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/gin-gonic/logo/master/color.png" width="180" />
+  <img src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*XBvxUxqycRC8B8KGCuzJVw.png" width="220" />
+  <img src="https://dev.mysql.com/common/logos/logo-mysql-170x115.png" width="220" />
+</div>
 
 ## Flow Auth (sesuai API contract)
 1. **Register `/api/auth/register`**
    - Payload: `full_name`, `business_name`, `email`, `phone_number`, `password`, `confirm_password`.
-   - Simpan user dengan status `PENDING_EMAIL_VERIFICATION`, buat token `672..` (24 jam), kirim email via SMTP, log link.
+   - Simpan user dengan status `PENDING_EMAIL_VERIFICATION`, buat token 24 jam, kirim email via SMTP, log link.
 2. **Verify Email `/api/auth/verify-email?token=xxx`**
    - Validasi token belum expired/used.
    - Ubah status user → `ACTIVE`, `email_verified = true`, tandai token used.
@@ -46,7 +52,7 @@
   migrate -database "mysql://root:root@tcp(127.0.0.1:3306)/onboarding?charset=utf8mb4&parseTime=True&loc=Local" -path database/migrations up
   ```
 - Start server: `go run cmd/api/main.go`.
-- Swagger: `http://localhost:8080/swagger/index.html` (BearserAuth login).
+- Swagger: `http://localhost:8080/swagger/index.html` (BearerAuth login).
 
 ## Catatan terakhir
 - Semua error ditangani dengan kode HTTP sesuai kontrak (400/401/403/409/500).
