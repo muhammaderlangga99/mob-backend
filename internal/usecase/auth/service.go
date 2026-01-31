@@ -109,7 +109,7 @@ func (s *AuthService) Register(req dto.RegisterRequest) (*dto.RegisterResponseDa
 	}
 
 	if s.emailService != nil {
-		if err := s.emailService.SendVerificationEmail(user.Email, verificationToken.Token); err != nil {
+		if err := s.emailService.SendVerificationEmail(user.Email, user.FullName, verificationToken.Token); err != nil {
 			log.Printf("failed to send verification email: %v", err)
 		}
 	}

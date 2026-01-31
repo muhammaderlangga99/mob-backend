@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
+	"github.com/joho/godotenv"
 
 	"mob-backend/internal/config"
 	"mob-backend/internal/handler/auth"
@@ -30,6 +31,9 @@ import (
 
 // main bootstraps the HTTP server and wires auth routes with clean architecture layers.
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("warning: .env not loaded:", err)
+	}
 	r := gin.Default()
 
 	r.GET("/health", func(c *gin.Context) {
@@ -53,19 +57,16 @@ func main() {
 	userRepo := repo.NewUserRepository(db)
 	tokenRepo := repo.NewEmailVerificationRepository(db)
 
-	smtpHost := os.Getenv("SMTP_HOST")
-	smtpPort := os.Getenv("SMTP_PORT")
-	smtpUsername := os.Getenv("SMTP_USERNAME")
-	smtpPassword := os.Getenv("SMTP_PASSWORD")
-	smtpFrom := os.Getenv("SMTP_FROM")
+	postmarkToken := os.Getenv("POSTMARK_SERVER_TOKEN")
+	postmarkFrom := os.Getenv("POSTMARK_FROM_EMAIL")
 	appURL := os.Getenv("APP_URL")
 	if appURL == "" {
 		appURL = "http://localhost:8080"
 	}
 
-	emailService := email.NewSMTPEmailService(smtpHost, smtpPort, smtpUsername, smtpPassword, smtpFrom, appURL)
-	if smtpHost == "" || smtpPort == "" || smtpUsername == "" || smtpPassword == "" || smtpFrom == "" {
-		log.Println("SMTP env vars incomplete; verification emails will log errors until configured")
+	emailService := email.NewPostmarkEmailService(postmarkToken, postmarkFrom, appURL)
+	if postmarkToken == "" || postmarkFrom == "" {
+		log.Println("Postmark env vars incomplete; verification emails will log errors until configured")
 	}
 
 	authUsecase := usecase.NewAuthService(userRepo, tokenRepo, emailService, usecase.TokenConfig{
